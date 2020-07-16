@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include "libmx.h"
+#include "cJSON.h"
+#include "sqlite3.h"
 
 #define SEND_BUFF_SIZE 1025
 #define SERVER_IP_ADDRESS "localhost"
