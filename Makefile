@@ -6,7 +6,7 @@ LIBS_INCS = libmx.h cJSON.h sqlite3.h
 LIBS_INC = libmx/inc/libmx.h cJSON/inc/cJSON.h sqlite3/inc/sqlite3.h
 
 CFLAG = -std=c11 -Wall -Wextra -Werror -Wpedantic
-OPENSSL = -I./openssl/include
+OPENSSL = -I./openssl/include -L./openssl/lib -lssl -lcrypto
 
 OBJ_DIR = obj
 
@@ -68,7 +68,7 @@ server_install:
 	@cp $(SERVER_SRC) .
 	@mkdir -p $(OBJ_DIR)
 	@clang -c $(SERVER_SRCS) -I $(SERVER_INCS)
-	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -I $(SERVER_INCS) $(LIBS)
+	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -lpthread -I $(SERVER_INCS) $(LIBS)
 	@cp $(SERVER_OBJS) ./$(OBJ_DIR)
 	@rm -rf $(SERVER_OBJS)
 

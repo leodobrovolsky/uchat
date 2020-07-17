@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
+#include <pthread.h>
 #include "libmx.h"
 #include "cJSON.h"
 #include "sqlite3.h"
@@ -16,10 +17,10 @@
 #define SERVER_IP_ADDRESS "localhost"
 #define SERVER_PORT 5000
 #define MAX_CLIENTS 10
+#define SOCKET_BUFFER_SIZE 2048
 
 typedef struct s_server {
-    int listenfd;
-    int confd;
+    int server_fd;
     struct sockaddr_in serv_addr;
     char *send_buff;
 } t_server;

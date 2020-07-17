@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
         {
             printf("\n Error : Fputs error\n");
         }
+        //break;
     }
     if(n < 0)
     {
