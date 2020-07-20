@@ -43,12 +43,17 @@ void *mx_server_client_init(void *connfd) {
     int client_fd = *(int*) connfd;
     unsigned long fd = (unsigned long) client_fd;
     char buf[SOCKET_BUFFER_SIZE];
+    int read_num = 0;
 
-    mx_memset(&buf, '1', 20);
-    
+    mx_memset(&buf, client_fd, 20);
+    mx_memset(&buf[20], 0, SOCKET_BUFFER_SIZE - 20);
+    mx_printint(client_fd);
     while(1) {
-        send(client_fd, buf, 20, 0);
+        read_num = read(client_fd, &buf, 20);
+        if (read_num > 0)
+            break;
     }
+    mx_printstr(buf);
     pthread_exit(0);
 }
 
@@ -68,12 +73,10 @@ void mx_server_loop(t_server *serv) {
     int connfd = 0;
     pthread_t treat[MAX_CLIENTS];
     int client_index = 0;
-    mx_printint(99);
+
     while(1) {
         connfd = accept(serv->server_fd, (struct sockaddr*)NULL, NULL);
         pthread_create(&treat[client_index], NULL, mx_server_client_init, &connfd);
-        //pthread_join(treat[client_index], NULL);
-        mx_printint(client_index);
         client_index++;
     }
 }

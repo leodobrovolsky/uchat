@@ -10,10 +10,11 @@
 #include <arpa/inet.h>
 #include "libmx.h"
 
-#define SEND_BUFF_SIZE 1025
+#define BUFF_SIZE 1025
 #define SERVER_PORT 5000
 
 typedef struct s_client {
-    int sockld;
+    int sockfd;
+    int confd;
     struct sockaddr_in serv_addr;
 } t_client;
