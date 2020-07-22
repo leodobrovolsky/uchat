@@ -7,7 +7,6 @@
 #include "libmx.h"
 
 
-
 typedef struct s_sql_resp {
     char **data;
     struct s_sql_resp *next;
@@ -127,7 +126,6 @@ void mx_push_data_table(t_table **table, char **datas) {
 void mx_insert_data(char const *name_db, char const *name_table, sqlite3 **db, t_table *table) {
     int res = sqlite3_open(name_db, db);
     char *err_msg = 0;
-
     t_table *tmp = table;
     char *request = mx_strjoin("INSERT INTO ", name_table);
 
@@ -253,6 +251,7 @@ void mx_print_sql_resp(t_sql_resp *resp) {
     }
 }
 
+
 int main (int argc, char *argv[]) {
     sqlite3 *db = NULL;
     t_table *column = NULL;
@@ -261,14 +260,16 @@ int main (int argc, char *argv[]) {
     if (argc != 3)
         mx_print_error("Usage &database &table", 1, true);
 
-    char *datas[2] = {"NULL", "ldobrovols"};
+    char *datas[2] = {"NULL", "2"};
 
     mx_push_t_table(&column, mx_strdup("id"), mx_strdup("PRIMARY KEY"), mx_strdup("INTEGER")); //каждая стуктура - это колонка в таблице
-    mx_push_t_table(&column, mx_strdup("login"), NULL, mx_strdup("TEXT")); //добавляем еще одну колонку
-    //mx_create_db(argv[1]); //созадем базу
-    //mx_create_table(argv[1], argv[2], &db, column); // создаем таблицу
-    mx_push_data_table(&column, datas); //добавляем в структуру колонок реквизит с данными по каждой колонке
+    mx_push_t_table(&column, mx_strdup("user_id"), NULL, mx_strdup("INTEGER")); //добавляем еще одну колонку
+    mx_push_t_table(&cloumn, "login", NULL, "TEXT");
+    mx_create_db(argv[1]); //созадем базу
+    mx_create_table(argv[1], argv[2], &db, column); // создаем таблицу
+    //mx_push_data_table(&column, datas); //добавляем в структуру колонок реквизит с данными по каждой колонке
     //mx_insert_data(argv[1], argv[2], &db, column);  //добавляем в таблицу данные
     res = mx_select_table(argv[1], argv[2], &db, column, NULL, 2); //пятым параметром указываем условие Например "WHERE ID=1", шестой параметр - количество столбцов в таблице В данной таблице и две - id, login
+    
     mx_print_sql_resp(res);
 }
