@@ -24,7 +24,7 @@ typedef struct s_client_main {
     char *login;
     char *name;
     char *surname;
-    char *rooms;
+    char **rooms;
     GtkApplication *win;
     GtkWidget *but;
 } t_client_main;
