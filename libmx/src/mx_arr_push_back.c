@@ -11,4 +11,5 @@ void mx_arr_push_back(t_list_arr **arr_list, char **data) {
     while(tmp->next)
         tmp = tmp->next;
     tmp->next = back;
+    back->prev = tmp;
 }

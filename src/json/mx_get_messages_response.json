@@ -1,0 +1,8 @@
+{
+    "id": &id,
+    "type": "response",
+    "status": &status,
+    "operation": 4,
+    "room": "&room",
+    "messages": [
+

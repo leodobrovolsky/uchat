@@ -30,4 +30,4 @@ t_list_arr *mx_select_table(const t_database t_db, char *cond, int columns);
 void mx_update_data(t_database t_db, char *condition);
 t_table *mx_copy_struct_t_table(t_table *table);
 void mx_delete_data(t_database t_db, char *condition);
-
+bool mx_check_unique_update_data(t_database t_db, char **unique, int columns);

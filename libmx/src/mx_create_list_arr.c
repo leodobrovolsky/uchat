@@ -5,5 +5,6 @@ t_list_arr *mx_create_list_arr(char **data) {
     
     tmp->data = mx_arrdup(data);
     tmp->next = NULL;
+    tmp->prev = NULL;
     return tmp;
 }

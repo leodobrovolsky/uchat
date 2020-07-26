@@ -1,0 +1,6 @@
+{
+    "id": &id,
+    "type": "response",
+    "status": &status,
+    "operation": 5,
+    "rooms": [

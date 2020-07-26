@@ -1,0 +1,10 @@
+{
+    "id": &time,
+    "type": "request",
+    "operation": 2,
+    "login": "&login",
+    "password": "&password",
+    "name": "&name",
+    "surname": "&surname",
+    "email": "&email"
+}

@@ -9,11 +9,12 @@
 typedef struct s_arr {
     char **data;
     struct s_arr *next;
+    struct s_arr *prev;
 } t_list_arr;
 
 typedef struct s_list {
-void *data;
-struct s_list *next;
+    void *data;
+    struct s_list *next;
 } t_list;
 
 int mx_atoi(const char *str);
@@ -97,6 +98,7 @@ void mx_free_arr_list(t_list_arr **list);
 void mx_arr_push_back(t_list_arr **arr_list, char **data);
 t_list_arr *mx_create_list_arr(char **data);
 void mx_print_list_arr(t_list_arr *list);
+void mx_arr_push_front(t_list_arr **list, char **data);
 
 #endif
 
