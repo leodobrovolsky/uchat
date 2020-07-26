@@ -1,0 +1,6 @@
+{
+    "id": &time,
+    "type": "request",
+    "operation": 4,
+    "room": "&room"
+}

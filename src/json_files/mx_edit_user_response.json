@@ -2,5 +2,5 @@
     "id": &time,
     "type": "response",
     "status": &status,
-    "operation": 1
+    "operation": 3
 }

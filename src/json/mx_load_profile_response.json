@@ -1,0 +1,12 @@
+{
+    "id": &time,
+    "type": "response",
+    "status": &status,
+    "operation": 9,
+    "login": "&login",
+    "name": "&name",
+    "surname": "&surname",
+    "email": "&email",
+    "rules": "&rules",
+    "user_status": "&user_status"
+}

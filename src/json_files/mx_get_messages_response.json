@@ -1,7 +1,8 @@
 {
-    "id": &time,
+    "id": &id,
     "type": "response",
     "status": &status,
-    "operation": 6,
+    "operation": 4,
     "room": "&room",
-    "users": [
+    "messages": [
+

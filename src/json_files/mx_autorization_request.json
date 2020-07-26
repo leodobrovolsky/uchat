@@ -1,0 +1,7 @@
+{
+    "id": &time,
+    "type": "request",
+    "operation": 1,
+    "login": "&login",
+    "password": "&password"
+}

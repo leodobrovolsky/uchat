@@ -3,10 +3,6 @@
 #include <time.h>
 #include "uchat.h"
 
-#define CONNECT "0"
-#define CONNECT_REQUEST_FILE "mx_connect_request.json"
-#define CONNECT_RESPONSE_FILE "mx_connect_response.json"
-
 
 
 
@@ -183,8 +179,132 @@ char *mx_get_rooms_response_to_json(char **rooms, int status) {
     return tmp;
 }
 
-char *mx_get_users_in_rooms_request_to_json(char *room) {
+char *mx_get_users_in_rooms_request_to_json(char *room, char *user) {
+    char *tmp = mx_file_to_str(GET_USERS_IN_ROOMS_REQUEST_FILE);
+    char *times = mx_get_current_time();
 
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&user", user);
+    mx_replace_str(&tmp, "&room", room);
+    mx_strdel(&times);
+    return tmp;
+}
+
+char *mx_get_users_in_rooms_response_to_json(char *room, char **users, int status) {
+    char *tmp = mx_file_to_str(GET_USERS_IN_ROOMS_RESPONSE_FILE);
+    char *st = mx_itoa(status);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&status", st);
+    mx_replace_str(&tmp, "&room", room);
+    for (int i = 0; users[i]; i++) {
+        mx_stradd(&tmp, "\"");
+        mx_stradd(&tmp, users[i]);
+        mx_stradd(&tmp, "\"");
+        if (users[i+1])
+            mx_stradd(&tmp, ",");
+    }
+    mx_stradd(&tmp, "]}");
+    mx_strdel(&times);
+    mx_strdel(&st);
+    return tmp;
+}
+
+char *mx_leav_room_request_to_json(char *room, char *user) {
+    char *tmp = mx_file_to_str(LEAV_ROOM_REQUEST_FILE);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&room", room);
+    mx_replace_str(&tmp, "&user", user);
+    mx_replace_str(&tmp, "&time", times);
+    mx_strdel(&times);
+    return tmp;
+}
+
+char *mx_leav_room_response_to_json(int status) {
+    char *tmp = mx_file_to_str(LEAV_ROOM_RESPONSE_FILE);
+    char *st = mx_itoa(status);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&id", times);
+    mx_replace_str(&tmp, "&status", st);
+    mx_strdel(&times);
+    mx_strdel(&st);
+    return tmp;    
+}
+
+char *mx_add_user_to_room_request_to_json(char *user, char *room) {
+    char *tmp = mx_file_to_str(ADD_USER_TO_ROOM_REQUEST_FILE);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&room", room);
+    mx_replace_str(&tmp, "&user", user);
+    mx_replace_str(&tmp, "&time", times);
+    mx_strdel(&times);
+    return tmp;   
+}
+
+char *mx_add_user_to_room_response_to_json(int status) {
+    char *tmp = mx_file_to_str(ADD_USER_TO_ROOM_RESPONSE_FILE);
+    char *st = mx_itoa(status);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&status", st);
+    mx_strdel(&times);
+    mx_strdel(&st);
+    return tmp;   
+}
+
+char *mx_load_profile_request_to_json(char *user) {
+    char *tmp = mx_file_to_str(LOAD_PROFILE_REQUEST_FILE);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&user", user);
+    mx_strdel(&times);
+    return tmp;
+}
+
+char *mx_load_profile_response_to_json(t_user_create user, int status) {
+    char *tmp = mx_file_to_str(LOAD_PROFILE_RESPONSE_FILE);
+    char *st = mx_itoa(status);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&status", st);
+    mx_replace_str(&tmp, "&login", user.login);
+    mx_replace_str(&tmp, "&name", user.name);
+    mx_replace_str(&tmp, "&surname", user.surname);
+    mx_replace_str(&tmp, "&email", user.email);
+    mx_replace_str(&tmp, "&rules", user.rules);
+    mx_replace_str(&tmp, "&user_status", user.status);
+    mx_strdel(&times);
+    mx_strdel(&st);
+    return tmp;     
+}
+
+char *mx_create_room_request_to_json(char *name) {
+    char *tmp = mx_file_to_str(CREATE_ROOM_REQUEST_FILE);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&name", name);
+    mx_strdel(&times);
+    return tmp;
+}
+
+char *mx_create_room_response_to_json(int status) {
+    char *tmp = mx_file_to_str(CREATE_ROOM_RESPONSE_FILE);
+    char *st = mx_itoa(status);
+    char *times = mx_get_current_time();
+
+    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&status", st);
+    mx_strdel(&times);
+    mx_strdel(&st);
+    return tmp;     
 }
 
 int main(int argc, char *argv[]) {
@@ -199,6 +319,7 @@ int main(int argc, char *argv[]) {
     user.surname = "Dobrovolsky";
     user.email = "leo@mail.com";
     user.status = "active";
+    user.rules = "admin";
     
 
     // char *mes1[3] = {"123", "Leonid","hello"};
@@ -224,7 +345,17 @@ int main(int argc, char *argv[]) {
     //char *res = mx_get_messages_request_to_json("forum");
     //char *res = mx_get_messages_response_to_json(mes, "forum", 0);
     //char *res = mx_get_rooms_request_to_json("leonid");
-    char *res = mx_get_rooms_response_to_json(mes1, 0);
+    //char *res = mx_get_rooms_response_to_json(mes1, 0);
+    //char *res = mx_get_users_in_rooms_request_to_json("forum", "1");
+    //char *res = mx_get_users_in_rooms_response_to_json("forum", mes1, 0);
+    //char *res = mx_leav_room_request_to_json("forum", "igor");
+    //char *res= mx_leav_room_response_to_json(0);
+    //char *res = mx_add_user_to_room_request("forum", "igor");
+    //char *res = mx_add_user_to_room_response(1);
+    //char *res = mx_load_profile_request("leonid");
+    //char *res = mx_load_profile_response_to_json(user, 12);
+    //char *res = mx_create_room_request_to_json("asldf");
+    char *res = mx_create_room_response_to_json(1);
 
     cJSON *root = NULL;
 

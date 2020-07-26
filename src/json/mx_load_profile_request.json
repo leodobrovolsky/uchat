@@ -1,7 +1,6 @@
 {
     "id": &time,
     "type": "request",
-    "operation": 6,
-    "room": "&room",
+    "operation": 9,
     "user": "&user"
 }
