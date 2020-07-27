@@ -291,12 +291,12 @@
 // }
 
 int main(int argc, char *argv[]) {
-    t_server_main *server = NULL;
+    t_server *server = NULL;
     int fd = 0;
 
     if (argc != 2)
         mx_print_error("Usage ./uchat_server %PORT", 1, true);
-    server = malloc(sizeof(t_server_main));
+    server = malloc(sizeof(t_server));
     fd = open(DATABASE_NAME, O_RDONLY);
     if (fd == -1)
         mx_init_database();

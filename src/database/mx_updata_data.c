@@ -34,7 +34,7 @@ void mx_update_data(t_database t_db, char *condition) {
     char *err_msg = 0;
     sqlite3 *db = NULL;
     int res = sqlite3_open(t_db.name_db, &db);
-
+    mx_printstr(request);
     if (res!= SQLITE_OK) 
         mx_print_error("Cannot open database", 1, true);
     else

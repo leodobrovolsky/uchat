@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-
+#include <gtk/gtk.h>
 
 //logs
 #define PRINT_JSON_ERROR 1
@@ -35,7 +35,7 @@
 #define TABLE_ROOMS_COLUMNS 2
 #define TABLE_USERS_ROOMS_COLUMNS 2
 #define TABLE_MESSAGES_COLUMNS 5
-#define TABLE_ACTIVE_USERS 3
+#define TABLE_ACTIVE_USERS_COLUMNS 3
 #define BUFFER_SIZE 1025
 #define WINDOW_MAIN_WEIGHT 1000
 #define WINDOW_MAIN_HEIGHT 700
@@ -102,11 +102,38 @@
 #define CREATE_ROOM_RESPONSE_FILE "src/json_files/mx_create_room_response.json"
 
 
+//client
+#define BUFFER_SIZE 1025
+#define WINDOW_MAIN_WEIGHT 1000
+#define WINDOW_MAIN_HEIGHT 700
+
+// typedef struct s_client_main {
+//     char *login;
+//     char *name;
+//     char *surname;
+//     char **rooms;
+//     GtkApplication *win;
+//     GtkWidget *but;
+// } t_client_main;
+
+typedef struct s_user_create {
+    char *id;
+    char *login;
+    char *password;
+    char *name;
+    char *surname;
+    char *email;
+    char *rules;
+    char *status;
+} t_user_create;
+
 //server
 typedef struct s_server {
     struct sockaddr_in svaddr;
     int sock_fd;
+    int client_fd;
     char *input_str;
+    bool exit_status;
     t_user_create *user;
 } t_server;
 
@@ -125,23 +152,15 @@ typedef struct s_database {
     t_table *table;
 } t_database;
 
-typedef struct s_client_main {
+typedef struct s_client {
+    int sock_fd;
     char *login;
     char *name;
     char *surname;
     char **rooms;
-} t_client_main;
-
-typedef struct s_user_create {
-    char *id;
-    char *login;
-    char *password;
-    char *name;
-    char *surname;
-    char *email;
-    char *rules;
-    char *status;
-} t_user_create;
+    GtkApplication *win;
+    GtkWidget *but;
+} t_client;
 
 typedef struct s_message_create {
     char *room;
@@ -172,6 +191,9 @@ t_table *mx_create_t_table_active_users();
 void mx_init_database();
 bool mx_update_user(t_user_create *user, char *old_login);
 void mx_pop_front_table(t_table **table);
+char *mx_get_room_id(char *name);
+char *mx_get_user_id(char *name);
+t_list_arr *mx_server_get_mes_list(char *name);
 
 
 //requst/responses to json 
@@ -179,7 +201,7 @@ char *mx_connect_request_to_json();
 char *mx_connect_response_to_json(int status);
 char *mx_autorization_request_to_json(char *login, char *passwd);
 char *mx_autorization_response_to_json(int status);
-char *mx_register_request_to_json(t_user_create user);
+char *mx_register_request_to_json(t_user_create *user);
 char *mx_register_response_to_json(int status);
 char *mx_edit_user_request_to_json(t_user_create *user, char *old_login);
 char *mx_edit_user_response_to_json(int status);
@@ -198,6 +220,7 @@ char *mx_load_profile_response_to_json(t_user_create user, int status);
 char *mx_create_room_request_to_json(char *name);
 char *mx_create_room_response_to_json(int status);
 
+
 //server
 int mx_getch(char *input_str);
 void mx_run_help();
@@ -215,3 +238,12 @@ void mx_free_user_create(t_user_create **user);
 //parsing
 t_user_create *mx_arr_to_user_create(char **arr);
 char **mx_user_create_to_arr(t_user_create *user);
+void mx_parse_json(t_server *main, char *str);
+void mx_parse_request(t_server *main, cJSON *root, int time_int);
+void mx_parse_response(t_server *main, cJSON *root, int time_int);
+void mx_server_req_autorization(t_server *server, cJSON *root);
+t_list_arr *mx_server_search_user(char *login, char *password);
+void mx_server_req_connect(t_server *main);
+void mx_print_error_json(cJSON *root);
+void mx_server_req_get_messages(t_server *server, cJSON *root);
+

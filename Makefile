@@ -7,7 +7,7 @@ LIBS_INC = libmx/inc/libmx.h cJSON/inc/cJSON.h sqlite3/inc/sqlite3.h
 
 CFLAG = -std=c11 -Wall -Wextra -Werror -Wpedantic -lsocket -lnsl
 OPENSSL = -I./openssl/include -L./openssl/lib -lssl -lcrypto
-
+FLAG = `pkg-config --cflags --libs gtk+-3.0`
 OBJ_DIR = obj
 
 CLIENT_INC = inc/uchat.h
@@ -18,11 +18,11 @@ CLIENT_INCS = uchat.h
 
 SERVER_INCS = uchat.h
 
-CLIENT_SRC = 
+CLIENT_SRC = src/parsing/*.c src/database/*.c src/client/*.c src/requests/*.c src/responses/*.c src/database/*.c src/server/mx_get_current_time.c
 
 SERVER_SRC = src/test.c src/parsing/*.c src/database/*.c src/server/*.c src/requests/*.c src/responses/*.c
 
-CLIENT_SRCS = client.c
+CLIENT_SRCS = *.c
 
 SERVER_SRCS = *.c
 
@@ -57,12 +57,12 @@ lib_install:
 client_install:
 	@cp $(CLIENT_INC) .
 	@cp $(CLIENT_SRC) .
-	@clang -o $(CLIENT_NAME) $(CLIENT_SRCS) -I $(CLIENT_INCS) $(LIBS)
+	@clang -o $(CLIENT_NAME) $(CLIENT_SRCS) -I $(CLIENT_INCS) $(LIBS) $(FLAG)
 
 server_install:
 	@cp $(SERVER_INC) .
 	@cp $(SERVER_SRC) .
-	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -lpthread -I $(SERVER_INCS) $(LIBS)
+	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -lpthread -I $(SERVER_INCS) $(LIBS) $(FLAG)
 
 install: lib_install client_install server_install
 
