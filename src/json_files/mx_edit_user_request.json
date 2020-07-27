@@ -2,6 +2,7 @@
     "id": &time,
     "type": "request",
     "operation": 2,
+    "old_login": "&old_login",
     "login": "&login",
     "password": "&password",
     "name": "&name",

@@ -1,13 +1,13 @@
 #include "uchat.h"
 
-char *mx_create_room_response_to_json(int status) {
-    char *tmp = mx_file_to_str(CREATE_ROOM_RESPONSE_FILE);
+char *mx_leav_room_response_to_json(int status) {
+    char *tmp = mx_file_to_str(LEAV_ROOM_RESPONSE_FILE);
     char *st = mx_itoa(status);
     char *times = mx_get_current_time();
 
-    mx_replace_str(&tmp, "&time", times);
+    mx_replace_str(&tmp, "&id", times);
     mx_replace_str(&tmp, "&status", st);
     mx_strdel(&times);
     mx_strdel(&st);
-    return tmp;     
+    return tmp;
 }

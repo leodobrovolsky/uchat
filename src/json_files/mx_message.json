@@ -1,5 +1,7 @@
         {
             "time": "&time",
             "user": "&user",
+            "name": "&name",
+            "surname": "&surname",
             "text": "&text"
         }

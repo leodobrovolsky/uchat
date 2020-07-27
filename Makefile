@@ -20,11 +20,11 @@ SERVER_INCS = uchat.h
 
 CLIENT_SRC = 
 
-SERVER_SRC = src/database/*.c
+SERVER_SRC = src/test.c src/parsing/*.c src/database/*.c src/server/*.c src/requests/*.c src/responses/*.c
 
 CLIENT_SRCS = client.c
 
-SERVER_SRCS = server.c
+SERVER_SRCS = *.c
 
 CLIENT_OBJ = obj/client.o
 
