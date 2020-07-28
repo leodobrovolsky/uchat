@@ -66,25 +66,7 @@ void mx_client_config_socket(t_client **client, char *IP, char *port) {
 
 
 void mx_client_parse_json(t_client *main) {
-    main = NULL;
-    // t_client *c = *main;
-    // char *str = mx_strdup(c->buf);
-    // cJSON *root = cJSON_Parse(str);
-
-    // if (!root || !root->child)
-    //     mx_print_error_json(root);
-    // root = root->child;
-    // if (!root)
-    //     mx_print_error_json(root);
-    // root = root->next;
-    // if (!root)
-    //     mx_print_error_json(root);
-    // if (!mx_strcmp(root->valuestring, JSON_TYPE_RESPONSE))
-    //     mx_client_parse_response(main, root->next, root->prev->valueint);
-    // else
-    //     mx_print_error_json(root);
-    // cJSON_Delete(root);
-    // mx_strdel(&str);
+    mx_printstr(main->buf);
 }
 
 

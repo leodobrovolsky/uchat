@@ -246,6 +246,7 @@ void mx_print_user_create(t_user_create *user);
 char *mx_get_current_time();
 void mx_free_user_create(t_user_create **user);
 void mx_server_select();
+void mx_server_send(int fd, char *str);
 
 
 //parsing

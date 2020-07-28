@@ -313,8 +313,16 @@ void mx_config_socket(t_server **server) {
 
 void *mx_server_main_recv(void *server) {
     t_server *s = (t_server*)server;
-    mx_printstr("Connect ok: ");
-    mx_printint(s->cfd);
+    char *buf = NULL;
+    int size = 0;
+
+    while(1) {
+        buf = mx_strnew(SOCKET_BUFFER_SIZE);
+        size = recv(s->sock_fd, buf, SOCKET_BUFFER_SIZE, 0);
+        if (size > 0)
+            mx_server_parse_json(s, buf);
+        mx_strdel(&buf);
+    }
     return NULL;
 }
 

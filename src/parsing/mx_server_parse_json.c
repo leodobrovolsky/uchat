@@ -13,9 +13,7 @@ void mx_server_parse_json(t_server *main, char *str) {
         mx_print_error_json(root);
     if (!mx_strcmp(root->valuestring, JSON_TYPE_REQUEST))
         mx_parse_request(main, root->next, root->prev->valueint);
-    else if (!mx_strcmp(root->valuestring, JSON_TYPE_RESPONSE))
-        mx_parse_response(main, root->next, root->prev->valueint);
-    else
+    else    
         mx_print_error_json(root);
     cJSON_Delete(root);
 }
