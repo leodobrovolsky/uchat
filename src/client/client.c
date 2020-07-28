@@ -25,7 +25,7 @@ void gtk_loop(GtkWidget *window, void *void_client) {
 
 
 void *mx_run_gtk(void *void_client) {
-    t_client *c = (t_client*)void_client;
+    t_client *c = *(t_client**)void_client;
     int status = 0;
 
     gtk_init(NULL, NULL);
@@ -40,51 +40,98 @@ void *mx_run_gtk(void *void_client) {
 
 
 void mx_client_config_socket(t_client **client, char *IP, char *port) {
-    struct sockaddr_in svaddr;
+    t_client *c = *client;
+     struct hostent *serv = NULL;
 
-    *(client->sock_fd) = socket(AF_INET, SOCK_STREAM, 0);
-    if (*(client->sock_fd) < 0)
+    c->sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (c->sock_fd < 0)
         mx_print_error("Error create socket", 1, true);
-    serv = gethostbyname(s->argv[1]);    
+    serv = gethostbyname(IP);    
     if(!serv) {
         write(2, "uchat error:: no host\n", 22);
         exit(1);
     }
-
-    mx_memset(&svaddr, 0, sizeof(struct sockaddr_in));
-    svaddr.sin_family = AF_INET;
-    mx_strncpy((char*)&svaddr.sin_addr.s_addr,(char*)serv->h_addr,serv->h_length);
-    svaddr.sin_port = htons(mx_atoi(s->argv[2])); //можна
-    
-    if (inet_pton(AF_INET, s->argv[1], &svaddr.sin_addr) <= 0)
-    ; //можна
-    //ошибка адреса
-    if (connect(sfd, (struct sockaddr *)&svaddr, sizeof(struct sockaddr_in)) == -1){
-        write(2, "ошибка установления соединения", 30);
-        exit(1);
-    }
-    else {
-        printf("%s ", "uchat:: \033[0;32mConnected to server\033[0;32m");
-        printf("%s : %s\n", s->argv[1], s->argv[2]);
-    }
-    s->sfd = sfd;	
+    mx_memset(&c->svaddr, 0, sizeof(struct sockaddr_in));
+    c->svaddr.sin_family = AF_INET;
+    mx_strncpy((char*)&c->svaddr.sin_addr.s_addr,(char*)serv->h_addr,serv->h_length);
+    c->svaddr.sin_port = htons(mx_atoi(port)); 
+    if (inet_pton(AF_INET, IP, &c->svaddr.sin_addr) <= 0)
+        mx_print_error("error inet_pton\n", 1, true);
+    if (connect(c->sock_fd, (struct sockaddr *)&c->svaddr, sizeof(struct sockaddr_in)) == -1)
+        mx_print_error("error connect\n", 1, true);
 }
 
 
 
 
+
+void mx_client_parse_json(t_client *main) {
+    main = NULL;
+    // t_client *c = *main;
+    // char *str = mx_strdup(c->buf);
+    // cJSON *root = cJSON_Parse(str);
+
+    // if (!root || !root->child)
+    //     mx_print_error_json(root);
+    // root = root->child;
+    // if (!root)
+    //     mx_print_error_json(root);
+    // root = root->next;
+    // if (!root)
+    //     mx_print_error_json(root);
+    // if (!mx_strcmp(root->valuestring, JSON_TYPE_RESPONSE))
+    //     mx_client_parse_response(main, root->next, root->prev->valueint);
+    // else
+    //     mx_print_error_json(root);
+    // cJSON_Delete(root);
+    // mx_strdel(&str);
+}
+
+
+void *mx_recv_loop(void *client) {
+    t_client *c = *(t_client **)client;
+    int size = 0;
+
+    while(1) {
+        c->buf = mx_strnew(SOCKET_BUFFER_SIZE);
+        size = recv(c->sock_fd, c->buf, SOCKET_BUFFER_SIZE, 0);
+        if (size > 0)
+            mx_client_parse_json(c);
+        mx_strdel(&c->buf);
+    }
+}
+
+void mx_client_send(int fd, char *str) {
+    send(fd, str, BUFFER_SIZE, 0);
+}
+
+
+void mx_create_req_connect(t_client *c) {
+    char *str = mx_connect_request_to_json();
+
+    mx_client_send(c->sock_fd, str);
+}
+
+void mx_client_create_request(t_client *client, int operation) {
+    
+    if (operation == REQ_CONNECT)
+        mx_create_req_connect(client);
+}
 
 
 int main(int argc, char *argv[]) {
     t_client *client = malloc(sizeof(t_client));
-    pthread_t pthread;
-
-    mx_client_config_socket(&client, argv[1], argv[2]);
+    pthread_t recv_thread;
 
     if (argc != 3)
         mx_print_error("Usage ./uchat_client %IP adress %port\n", 1, true);
-
+    mx_client_config_socket(&client, argv[1], argv[2]);
     //connect to server
-
-    mx_run_gtk((void*)client);
+    pthread_create(&recv_thread, NULL, mx_recv_loop, (void*)&client);
+    mx_client_create_request(client, 1);
+    //mx_run_gtk((void*)&client);
+    pthread_join(recv_thread, NULL);
 }
+
+
+

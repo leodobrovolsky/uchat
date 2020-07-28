@@ -5,6 +5,4 @@ void mx_server_req_get_messages(t_server *server, cJSON *root) {
     char *cond = mx_strdup("WHERE room_id");
     if (!root)
         mx_print_error_json(root);
-    
-
 }

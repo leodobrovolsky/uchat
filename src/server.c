@@ -290,17 +290,74 @@
 //     mx_free_t_table(&active_users);       
 // }
 
+t_server *mx_create_t_server() {
+    t_server *server = malloc(sizeof(t_server));
+
+    return server;
+}
+
+void mx_config_socket(t_server **server) {
+    t_server *s = *server;
+
+    s->sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (s->sock_fd < 0)
+        mx_print_error("Error create socket\n", 1, true);
+    s->addr.sin_family = AF_INET;
+    s->addr.sin_port = htons(s->port);
+    s->addr.sin_addr.s_addr = INADDR_ANY;
+    if (bind(s->sock_fd, (struct sockaddr*)(&s->addr), sizeof(s->addr)) != 0)
+        mx_print_error("error bind server\n", 1, true);
+    if(listen(s->sock_fd, SERVER_MAX_USERS) == -1)
+        mx_print_error("Error listen server\n", 1, true);
+}
+
+void *mx_server_main_recv(void *server) {
+    t_server *s = (t_server*)server;
+    mx_printstr("Connect ok: ");
+    mx_printint(s->cfd);
+    return NULL;
+}
+
+void mx_pthread_create(t_server *server, int cfd) {
+    pthread_t threat = NULL;
+
+    server->cfd = cfd;
+    pthread_create(&threat, NULL, mx_server_main_recv, server);
+    pthread_join(threat, NULL);
+}
+
+void mx_server_loop(t_server *server) {
+    int cfd = 0;
+    struct sockaddr_storage client_addr;
+    socklen_t sin_size = sizeof(struct sockaddr_storage);
+
+    while(1) {
+        cfd = accept(server->sock_fd, (struct sockaddr *) &client_addr, &sin_size);
+        if (cfd == -1)
+            mx_print_error("Error accept\n", 1, true);
+        mx_pthread_create(server, cfd);
+    }
+}
+
+
 int main(int argc, char *argv[]) {
-    t_server *server = NULL;
+    t_server *server = mx_create_t_server();
     int fd = 0;
+    pthread_t main_threat = NULL;
 
     if (argc != 2)
         mx_print_error("Usage ./uchat_server %PORT", 1, true);
-    server = malloc(sizeof(t_server));
     fd = open(DATABASE_NAME, O_RDONLY);
     if (fd == -1)
         mx_init_database();
-    mx_server_begin(server);
+    
+    if ((pthread_create(&main_threat, NULL, mx_server_begin, server)) != 0) {
+        mx_print_error("error create main threat", 1, true);
+    }
+    server->port = mx_atoi(argv[1]);
+    mx_config_socket(&server);
+    mx_server_loop(server);
+    pthread_join(main_threat, NULL);
 }
 
 

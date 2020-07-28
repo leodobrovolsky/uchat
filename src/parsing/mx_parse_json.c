@@ -1,6 +1,6 @@
 #include "uchat.h"
 
-void mx_parse_json(t_server *main, char *str) {
+void mx_server_parse_json(t_server *main, char *str) {
     cJSON *root = cJSON_Parse(str);
     
     if (!root || !root->child)

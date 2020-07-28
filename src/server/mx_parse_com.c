@@ -14,4 +14,6 @@ void mx_parse_com(char *str) {
         mx_server_delete_manager();
     else if (!mx_strcmp(str, SERVER_COM_EDIT_MANAGER))
         mx_server_edit_manager();
+    else if (!mx_strcmp(str, SERVER_COM_SELECT))
+        mx_server_select();
 }

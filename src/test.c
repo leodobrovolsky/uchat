@@ -171,13 +171,13 @@ int main() {
     //cJSON *root = NULL;
 
     
-    mx_printstr(res);
+    //mx_printstr(res);
     mx_parse_json(s, res);
-    //mx_strdel(&res);
-    // root = cJSON_Parse(res);
-    // if (print_preallocated(root) != 0) {
-    //     cJSON_Delete(root);
-    //     exit(EXIT_FAILURE);
-    // }
-    // cJSON_Delete(root);
+    mx_strdel(&res);
+    root = cJSON_Parse(res);
+    if (print_preallocated(root) != 0) {
+        cJSON_Delete(root);
+        exit(EXIT_FAILURE);
+    }
+    cJSON_Delete(root);
 }

@@ -20,7 +20,7 @@ SERVER_INCS = uchat.h
 
 CLIENT_SRC = src/parsing/*.c src/database/*.c src/client/*.c src/requests/*.c src/responses/*.c src/database/*.c src/server/mx_get_current_time.c
 
-SERVER_SRC = src/test.c src/parsing/*.c src/database/*.c src/server/*.c src/requests/*.c src/responses/*.c
+SERVER_SRC = src/server.c src/parsing/*.c src/database/*.c src/server/*.c src/requests/*.c src/responses/*.c
 
 CLIENT_SRCS = *.c
 

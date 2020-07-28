@@ -16,6 +16,9 @@
 #include <pthread.h>
 #include <gtk/gtk.h>
 
+
+#define SERVER_MAX_USERS 20
+
 //logs
 #define PRINT_JSON_ERROR 1
 #define EXIT_PRINT_ERROR 1
@@ -39,7 +42,7 @@
 #define BUFFER_SIZE 1025
 #define WINDOW_MAIN_WEIGHT 1000
 #define WINDOW_MAIN_HEIGHT 700
-#define SERVER_INPUT_SIZE 20
+#define SERVER_INPUT_SIZE 30
 #define SERVER_COM_HELP "/help"
 #define SERVER_COM_CREATE_MANAGER "/create_manager"
 #define SERVER_COM_DELETE_MANAGER "/delete_manager"
@@ -47,7 +50,8 @@
 #define SERVER_COM_MANAGERS "/managers"
 #define SERVER_COM_EXIT "/exit"
 #define SERVER_COM_ABORT "/abort"
-#define SERVER_HELP "/help - справка\n/exit - выход\n/create_manager - создать менеджера\n/delete_manager - удалить менеджера\n/edit_manager - изменить данные о менеджере\n/managers - вывести список менеджеров\n"
+#define SERVER_COM_SELECT "/select"
+#define SERVER_HELP "/help - справка\n/exit - выход\n/create_manager - создать менеджера\n/delete_manager - удалить менеджера\n/edit_manager - изменить данные о менеджере\n/managers - вывести список менеджеров\n/select - показать выборку таблицы\n"
 
 
 #define USER_TYPE_USUAL "usual"
@@ -57,7 +61,7 @@
 #define USER_STATUS_BAN "ban"
 
 
-#define BUFFER_SIZE 1025
+#define SOCKET_BUFFER_SIZE 1025
 #define WINDOW_MAIN_WEIGHT 1000
 #define WINDOW_MAIN_HEIGHT 700
 
@@ -129,8 +133,11 @@ typedef struct s_user_create {
 
 //server
 typedef struct s_server {
-    struct sockaddr_in svaddr;
+    struct sockaddr_in addr;
+    struct addrinfo *sock_info;
     int sock_fd;
+    int cfd;
+    int port;
     int client_fd;
     char *input_str;
     bool exit_status;
@@ -153,11 +160,14 @@ typedef struct s_database {
 } t_database;
 
 typedef struct s_client {
+    t_user_create *user;
     int sock_fd;
-    char *login;
-    char *name;
-    char *surname;
+    char *buf;
+    char *IP;
+    char *port;
+    char *acive_room;
     char **rooms;
+    struct sockaddr_in svaddr;
     GtkApplication *win;
     GtkWidget *but;
 } t_client;
@@ -194,6 +204,7 @@ void mx_pop_front_table(t_table **table);
 char *mx_get_room_id(char *name);
 char *mx_get_user_id(char *name);
 t_list_arr *mx_server_get_mes_list(char *name);
+t_list_arr *mx_get_select(char *table, char *cond);
 
 
 //requst/responses to json 
@@ -230,15 +241,17 @@ void mx_server_managers();
 void mx_server_delete_manager();
 void mx_server_edit_manager();
 void mx_parse_com(char *str);
-void mx_server_begin(t_server *s);
+void *mx_server_begin(void *server);
 void mx_print_user_create(t_user_create *user);
 char *mx_get_current_time();
 void mx_free_user_create(t_user_create **user);
+void mx_server_select();
+
 
 //parsing
 t_user_create *mx_arr_to_user_create(char **arr);
 char **mx_user_create_to_arr(t_user_create *user);
-void mx_parse_json(t_server *main, char *str);
+void mx_server_parse_json(t_server *main, char *str);
 void mx_parse_request(t_server *main, cJSON *root, int time_int);
 void mx_parse_response(t_server *main, cJSON *root, int time_int);
 void mx_server_req_autorization(t_server *server, cJSON *root);

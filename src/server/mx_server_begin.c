@@ -1,6 +1,7 @@
 #include "uchat.h"
 
-void mx_server_begin(t_server *s) {
+void *mx_server_begin(void *server) {
+    t_server *s = (t_server*) server;
     int size = 0;
 
     mx_printstr("Введите /help для справки\n");
@@ -12,8 +13,8 @@ void mx_server_begin(t_server *s) {
             mx_strdel(&s->input_str);
             continue;
         }
-        //mx_printstr(s->input_str);
         mx_parse_com(s->input_str);
         mx_strdel(&s->input_str);
     }
+    return NULL;
 }
