@@ -1,5 +1,5 @@
 #include "uchat.h"
-
+#include <errno.h>
 
 // void mx_config_server(t_server_main **s) {
 
@@ -298,6 +298,7 @@ t_server *mx_create_t_server() {
 
 void mx_config_socket(t_server **server) {
     t_server *s = *server;
+    int param = 1;
 
     s->sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (s->sock_fd < 0)
@@ -305,6 +306,8 @@ void mx_config_socket(t_server **server) {
     s->addr.sin_family = AF_INET;
     s->addr.sin_port = htons(s->port);
     s->addr.sin_addr.s_addr = INADDR_ANY;
+    if (setsockopt(s->sock_fd, SOL_SOCKET, SO_REUSEADDR, &param, sizeof(int)) == -1)
+        mx_print_error("error socket options\n", 1, true);
     if (bind(s->sock_fd, (struct sockaddr*)(&s->addr), sizeof(s->addr)) != 0)
         mx_print_error("error bind server\n", 1, true);
     if(listen(s->sock_fd, SERVER_MAX_USERS) == -1)
@@ -315,12 +318,16 @@ void *mx_server_main_recv(void *server) {
     t_server *s = (t_server*)server;
     char *buf = NULL;
     int size = 0;
+    
 
     while(1) {
         buf = mx_strnew(SOCKET_BUFFER_SIZE);
-        size = recv(s->sock_fd, buf, SOCKET_BUFFER_SIZE, 0);
-        if (size > 0)
+        size = read(s->cfd, buf, SOCKET_BUFFER_SIZE);
+        
+        if (size > 0) 
             mx_server_parse_json(s, buf);
+        if (size == -1)
+            break;
         mx_strdel(&buf);
     }
     return NULL;
@@ -331,7 +338,7 @@ void mx_pthread_create(t_server *server, int cfd) {
 
     server->cfd = cfd;
     pthread_create(&threat, NULL, mx_server_main_recv, server);
-    pthread_join(threat, NULL);
+    //pthread_join(threat, NULL);
 }
 
 void mx_server_loop(t_server *server) {
@@ -352,7 +359,7 @@ int main(int argc, char *argv[]) {
     t_server *server = mx_create_t_server();
     int fd = 0;
     pthread_t main_threat = NULL;
-
+    
     if (argc != 2)
         mx_print_error("Usage ./uchat_server %PORT", 1, true);
     fd = open(DATABASE_NAME, O_RDONLY);
@@ -364,6 +371,7 @@ int main(int argc, char *argv[]) {
     }
     server->port = mx_atoi(argv[1]);
     mx_config_socket(&server);
+
     mx_server_loop(server);
     pthread_join(main_threat, NULL);
 }

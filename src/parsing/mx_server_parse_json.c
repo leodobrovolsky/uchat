@@ -2,7 +2,7 @@
 
 void mx_server_parse_json(t_server *main, char *str) {
     cJSON *root = cJSON_Parse(str);
-    
+    mx_printstr(str);
     if (!root || !root->child)
         mx_print_error_json(root);
     root = root->child;
@@ -11,6 +11,7 @@ void mx_server_parse_json(t_server *main, char *str) {
     root = root->next;
     if (!root)
         mx_print_error_json(root);
+
     if (!mx_strcmp(root->valuestring, JSON_TYPE_REQUEST))
         mx_parse_request(main, root->next, root->prev->valueint);
     else    

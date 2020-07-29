@@ -18,14 +18,24 @@ static void mx_server_add_active_user(int fd, char *user_id) {
 
 void mx_server_req_autorization(t_server *server, cJSON *root) {
     t_list_arr *res = NULL;
-
+    char *str = NULL;
+    //char *str = mx_autorization_response_to_json();
+    
     if(!root || !(root->next))
         mx_print_error_json(root);
     res = mx_server_search_user(root->valuestring, root->next->valuestring);
-    if (res)
+    if (res) {
         server->user = mx_arr_to_user_create(res->data);
+        if (!mx_strcmp(res->data[6], USER_TYPE_MANAGER))
+            str = mx_autorization_response_to_json(RESPONSE_AUTORIZATION_MANAGER);
+        else
+            str = mx_autorization_response_to_json(RESPONSE_AUTORIZATION_USUAL);
+        mx_server_add_active_user(server->client_fd, res->data[0]);
+        mx_server_send(server->cfd, str);
+    }
     else {
-    	mx_server_add_active_user(server->client_fd, res->data[0]);
-        server->exit_status = true;
+        server->exit_status = false;
+        str = mx_autorization_response_to_json(RESPONSE_AUTORIZATION_FAIL);
+        mx_server_send(server->cfd, str);
     }
 }

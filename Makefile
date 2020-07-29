@@ -18,7 +18,7 @@ CLIENT_INCS = uchat.h
 
 SERVER_INCS = uchat.h
 
-CLIENT_SRC = src/parsing/*.c src/database/*.c src/client/*.c src/requests/*.c src/responses/*.c src/database/*.c src/server/mx_get_current_time.c
+CLIENT_SRC = src/server/mx_getch.c src/parsing/*.c src/database/*.c src/client/*.c src/requests/*.c src/responses/*.c src/database/*.c src/server/mx_get_current_time.c src/server/mx_server_send.c
 
 SERVER_SRC = src/server.c src/parsing/*.c src/database/*.c src/server/*.c src/requests/*.c src/responses/*.c
 
@@ -57,12 +57,12 @@ lib_install:
 client_install:
 	@cp $(CLIENT_INC) .
 	@cp $(CLIENT_SRC) .
-	@clang -o $(CLIENT_NAME) $(CLIENT_SRCS) -I $(CLIENT_INCS) $(LIBS) $(FLAG)
+	@clang -o $(CLIENT_NAME) $(CLIENT_SRCS) -I $(CLIENT_INCS) $(LIBS)
 
 server_install:
 	@cp $(SERVER_INC) .
 	@cp $(SERVER_SRC) .
-	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -lpthread -I $(SERVER_INCS) $(LIBS) $(FLAG)
+	@clang -o $(SERVER_NAME) $(SERVER_SRCS) -lpthread -I $(SERVER_INCS) $(LIBS)
 
 install: lib_install client_install server_install
 

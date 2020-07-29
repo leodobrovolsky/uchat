@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <gtk/gtk.h>
 
 
 #define SERVER_MAX_USERS 20
@@ -25,14 +26,6 @@
 //cJSON
 #define JSON_TYPE_REQUEST "request"
 #define JSON_TYPE_RESPONSE "response"
-#define RESPONSE_AUTORIZATION_FAIL 0
-#define RESPONSE_AUTORIZATION_USUAL 1
-#define RESPONSE_AUTORIZATION_MANAGER 2
-#define RESPONSE_REGISTER_OK 0
-#define RESPONSE_REGISTER_FAIL 1
-#define RESPONSE_EDIT_USER_OK 0
-#define RESPONSE_EDIT_USER_FAIL 1
-
 
 //database define
 #define DATABASE_NAME "database.db"
@@ -166,22 +159,69 @@ typedef struct s_database {
     t_table *table;
 } t_database;
 
-typedef struct s_client {
-    t_user_create *user;
-    t_user_create *user_copy;
-    int sock_fd;
-    char *buf;
-    char *login;
-    char *passwd;
-    char *current_login;
-    char *IP;
-    char *port;
-    char *active_room;
-    bool autorized;
-    bool registered;
+// typedef struct s_client {
+//     t_user_create *user;
+//     int sock_fd;
+//     char *buf;
+//     char *login;
+//     char *passwd;
+//     char *current_login;
+//     char *IP;
+//     char *port;
+//     char *active_room;
+//     t_list_arr **rooms;
+//     struct sockaddr_in svaddr;
+//     GtkApplication *win;
+//     GtkWidget *but;
+// } t_client;
+
+ typedef struct s_client {
+    GtkApplication *app;
+    GtkWidget *euser, *epass, *epass2, *sex1, *entry1, *entry2;
+    GtkWidget *ap_entry1, *ap_entry2;
+    GtkWidget *a_label4, *a_label6;
+    GtkWidget *chat_label1;
+    GtkWidget *chat_entry;
+    GtkWidget *main_window, *e_window, *reg_window, *reg_right_wind, *a_window, *ap_window, *chat_window;
+    GtkApplication *win;
+    GtkWidget *but;
+    const char *user ;
+    const char *pass ;
+    const char *pass2 ;
+    const char *email1 ;
+    const char *sex;
+    const char *login;
+    const char *email;
+    int fl;
+    const char *name;
+    const char *surname;
+    const char *current;
+    int theme;
+    int deth;
+    char **argv;
+    int sfd;
+    int f_exit;
+    pthread_mutex_t Lock;
+    int bufsize;
+    char *snd, *rcv;
+    GtkWidget *ligin_authoriz;
+    const char *pass_authoriz;
     t_list_arr **rooms;
-    struct sockaddr_in svaddr;
-} t_client;
+    t_list_arr **users;
+    t_list_arr *messages;
+}   t_client;
+
+
+typedef struct s_all_widg { 
+    GtkWidget *ligin_authoriz;
+    const char *pass_authoriz;
+} t_all_widg;
+
+typedef struct s_pass {
+    GtkWidget *epass, *epass2;
+    const char *pass;
+    const char *pass2;
+}   t_pass;
 
 typedef struct s_message_create {
     char *room;
